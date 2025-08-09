@@ -1,7 +1,5 @@
+import MainTemplate from '../components/templates/MainTemplate';
+
 export default function Home() {
-  return (
-    <main>
-      <div>Hello world!</div>
-    </main>
-  );
+  return <MainTemplate />;
 }

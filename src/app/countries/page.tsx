@@ -1,4 +1,4 @@
-"use client";
+'use client';
 import React, { useState } from 'react';
 import { gql, useQuery } from '@apollo/client';
 import client from '../../services/apolloClient';
@@ -7,7 +7,7 @@ import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import FormControl from '@mui/material/FormControl';
 import InputLabel from '@mui/material/InputLabel';
-import Select from '@mui/material/Select';
+import Select, { SelectChangeEvent } from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
@@ -21,23 +21,30 @@ const GET_COUNTRIES = gql`
       capital
       currency
       phone
-      continent { name }
-      languages { name native }
+      continent {
+        name
+      }
+      languages {
+        name
+        native
+      }
     }
   }
 `;
 
 import CountryTemplate from '../../components/templates/CountryTemplate';
 
+import type { CountriesData } from '../../types/country';
+
 const CountriesPage: React.FC = () => {
-  const { data, loading, error, refetch } = useQuery(GET_COUNTRIES, { client });
+  const { data, loading, error, refetch } = useQuery<CountriesData>(GET_COUNTRIES, { client });
   const [selected, setSelected] = useState<string>('');
 
-  const handleChange = (event: any) => {
+  const handleChange = (event: SelectChangeEvent<string>) => {
     setSelected(event.target.value);
   };
 
-  const country = data?.countries.find((c: any) => c.code === selected);
+  const country = data?.countries.find((c) => c.code === selected);
 
   return (
     <CountryTemplate>
@@ -51,7 +58,11 @@ const CountriesPage: React.FC = () => {
           </AtomButton>
         </Box>
         {loading && <Typography align="center">Loading...</Typography>}
-        {error && <Typography color="error" align="center">Error: {error.message}</Typography>}
+        {error && (
+          <Typography color="error" align="center">
+            Error: {error.message}
+          </Typography>
+        )}
         {data && (
           <FormControl fullWidth>
             <InputLabel id="country-select-label">Select a country</InputLabel>
@@ -61,7 +72,7 @@ const CountriesPage: React.FC = () => {
               label="Select a country"
               onChange={handleChange}
             >
-              {data.countries.map((country: any) => (
+              {data.countries.map((country) => (
                 <MenuItem key={country.code} value={country.code}>
                   {country.emoji} {country.name}
                 </MenuItem>
@@ -75,11 +86,22 @@ const CountriesPage: React.FC = () => {
               <Typography variant="h5" gutterBottom>
                 {country.emoji} {country.name}
               </Typography>
-              <Typography>Capital: <b>{country.capital || 'N/A'}</b></Typography>
-              <Typography>Continent: <b>{country.continent.name}</b></Typography>
-              <Typography>Currency: <b>{country.currency || 'N/A'}</b></Typography>
-              <Typography>Phone code: <b>+{country.phone}</b></Typography>
-              <Typography>Languages: <b>{country.languages.map((l: any) => `${l.name} (${l.native})`).join(', ') || 'N/A'}</b></Typography>
+              <Typography>
+                Capital: <b>{country.capital || 'N/A'}</b>
+              </Typography>
+              <Typography>
+                Continent: <b>{country.continent.name}</b>
+              </Typography>
+              <Typography>
+                Currency: <b>{country.currency || 'N/A'}</b>
+              </Typography>
+              <Typography>
+                Phone code: <b>+{country.phone}</b>
+              </Typography>
+              <Typography>
+                Languages:{' '}
+                <b>{country.languages.map((l) => `${l.name} (${l.native})`).join(', ') || 'N/A'}</b>
+              </Typography>
             </CardContent>
           </Card>
         )}
